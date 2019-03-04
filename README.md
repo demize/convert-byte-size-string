@@ -16,5 +16,5 @@ In your code, you can:
 ```rust
 use convert_byte_size_string::convert_to_bytes;
 
-let size :u128 = convert_to_bytes("7.9 EiB");
+let size: u128 = convert_to_bytes("7.9 EiB").unwrap();
 ```
