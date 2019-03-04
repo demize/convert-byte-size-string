@@ -1,0 +1,11 @@
+[package]
+name = "convert-byte-size-string"
+version = "1.0.0"
+authors = ["demize <demize@unstable.systems>"]
+edition = "2018"
+license = "MIT"
+license-file = "LICENSE"
+description = "Convert a byte size string to a u128 value."
+repository = "https://github.com/demize/convert-byte-size-string"
+
+[dependencies]
