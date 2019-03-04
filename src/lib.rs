@@ -160,8 +160,8 @@ enum ForceBase {
 ///
 /// ```rust
 /// use convert_byte_size_string::convert_to_bytes;
-/// assert_eq!(1024_u128, convert_to_bytes("1KiB").expect("a"));
-/// assert_eq!(1000_u128, convert_to_bytes("1KB").expect("b"));
+/// assert_eq!(1024_u128, convert_to_bytes("1KiB").unwrap());
+/// assert_eq!(1000_u128, convert_to_bytes("1KB").unwrap());
 /// ```
 pub fn convert_to_bytes(string: &str) -> Result<u128, ConversionError> {
     convert_to_bytes_with_base(string, ForceBase::Implied)
@@ -177,6 +177,7 @@ pub fn convert_to_bytes_base_2(string: &str) -> Result<u128, ConversionError> {
     convert_to_bytes_with_base(string, ForceBase::Base2)
 }
 
+/// Does the actual work for the publicly exposed functions. Takes the string to convert and the base to use.
 fn convert_to_bytes_with_base(string: &str, base: ForceBase) -> Result<u128, ConversionError> {
     let lowercase = string.to_lowercase();
     let mut splits: Vec<&str> = lowercase.trim().split_whitespace().collect();
@@ -264,7 +265,7 @@ fn convert_to_bytes_with_base(string: &str, base: ForceBase) -> Result<u128, Con
     }
 }
 
-/// Parse the correct exponent to use based on the string.
+/// Parse the correct exponent to use based on the string. If base is `ForceBase::Implied`, then imply the base to use, otherwise use the one specified.
 fn parse_exponent(string: &str, base: ForceBase) -> Result<u128, ConversionError> {
     if !string.is_ascii() {
         return Err(ConversionError::InputInvalid(format!(
