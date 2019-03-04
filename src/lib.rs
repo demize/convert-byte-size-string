@@ -88,6 +88,14 @@ mod tests {
             _ => panic!("Did not get a TooLarge error"),
         }
     }
+
+    #[test]
+    fn test_invalid() {
+        match convert_to_bytes("invalid input") {
+            Err(ConversionError::InputInvalid(_)) => return,
+            _ => panic!("Did not get an InputInvalid error"),
+        }
+    }
 }
 
 /// Represents possible errors the library can return.
@@ -210,6 +218,7 @@ pub fn convert_to_bytes(string: &str) -> Result<u128, ConversionError> {
     }
 }
 
+/// Parse the correct exponent to use based on the string.
 fn parse_exponent(string: &str) -> Result<u128, ConversionError> {
     if !string.is_ascii() {
         return Err(ConversionError::InputInvalid(format!(
