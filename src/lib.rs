@@ -1,3 +1,5 @@
+use std::convert::TryInto;
+
 #[cfg(test)]
 mod tests {
     use super::{
@@ -79,8 +81,18 @@ mod tests {
     }
 
     #[test]
+    fn test_long_decimal() {
+        assert_eq!(1_530_000, convert_to_bytes("1.53 MB").unwrap());
+    }
+
+    #[test]
     fn test_no_space() {
         assert_eq!(1024, convert_to_bytes("1KiB").unwrap());
+    }
+
+    #[test]
+    fn test_decimal_no_space() {
+        assert_eq!(1_530_000, convert_to_bytes("1.53MB").unwrap());
     }
 
     #[test]
@@ -252,8 +264,16 @@ fn convert_to_bytes_with_base(string: &str, base: ForceBase) -> Result<u128, Con
         },
         ParsingNumber::Float(m) => {
             if let Some(whole) = m.0.checked_mul(exponent) {
+                let fraction_digits: u32 = match m.1.to_string().len().try_into() {
+                    Ok(val) => val,
+                    Err(_) => {
+                        return Err(ConversionError::InputInvalid(String::from(
+                            "Decimal portion of input too long",
+                        )));
+                    }
+                };
                 if let Some(fraction) = m.1.checked_mul(exponent) {
-                    if let Some(fraction) = fraction.checked_div(10) {
+                    if let Some(fraction) = fraction.checked_div(10u128.pow(fraction_digits)) {
                         if let Some(val) = whole.checked_add(fraction) {
                             return Ok(val);
                         }
